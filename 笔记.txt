@@ -1,0 +1,48 @@
+在 MapReduce 中我们可以自定义输出的 kv 类型，
+
+   如果是自定义 vlaue 的类型需要让实体类实现 Writable 接口
+   接口中有两个需要实现的方法：
+       write：实体类对象到二进制数据的转换，序列化
+           使用 writeXXX() 方法把每一个属性转换为二进制 
+
+       readFields：实现二进制数据到实体类对象的转换，反序列化
+           使用 readXXX() 方法把每一个二进制转换为属性
+               读取顺序要和书写顺序保持一致
+
+  如果是自定义 key 的类型需要实现 WritableComparable 接口
+      map 输出的 kv 对会按照 key 进行排序
+      接口中除了上述两个方法还需要：
+          compareTo：计算两个实体对象的比较结果
+              比较两个对象的大小，实际就是在 compareTo 方法中比较指定属性的大小
+              这个方法主要用来进行排序，默认是升序，如果要降序的话，通过对返回值进行取反完成
+
+  toString() 决定了输出的格式
+
+
+如果能够在 map 端对数据进行汇总的话，那么发送给 reduce 的数据会减少，节省网络传输的时间，提高程序的执行效率
+    需要使用 Combiner 组件：
+        combiner 可以看作是 map 端的 reduce，可以对每一个 map 上的数据进行简单的汇总
+            combiner 的实现也需要继承自 Reducer，实现 reduce 方法
+            combiner 的输入是 map 的输出，输出是 reduce 的输入
+
+            通过 job.setCombinerClass 指定
+
+ChainMapper 和 ChainReducer 可以把多个 map，reduce，map 串联起来执行
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          
